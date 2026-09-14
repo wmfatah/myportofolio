@@ -5,15 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Muhammad Fatahillah Widodo - Portfolio</title>
+    <title>{{ name }} - Portofolio</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/style.css?v=2">
 </head>
 
 <body>
@@ -21,12 +22,18 @@
     <header class="site-header">
         <div class="container">
 
-            <a href="#profile" class="brand">
-                Muhammad Fatahillah Widodo
+            <a href="{% url 'main:show_main' %}" class="brand">
+                {{ name }}
             </a>
 
             <nav>
-                <a href="#profile">Profile</a>
+                <a href="{% url 'main:show_main' %}">
+                    Profile
+                </a>
+
+                <a href="{% url 'main:show_experience' %}">
+                    Experience
+                </a>
             </nav>
 
         </div>
@@ -34,6 +41,8 @@
 
 
     <main>
+
+        <!-- About Me -->
 
         <section class="hero" id="profile">
 
@@ -45,7 +54,7 @@
                         Computer Science &middot; Universitas Indonesia
                     </p>
 
-                    <h1>Muhammad Fatahillah Widodo</h1>
+                    <h1>{{ name }}</h1>
 
                 </div>
 
@@ -57,7 +66,7 @@
                     <img
                         class="avatar"
                         src="/static/img/foto.png"
-                        alt="Photo of Nama Kamu">
+                        alt="Photo of {{ name }}">
 
                 </div>
 
@@ -65,20 +74,31 @@
                 <div class="hero-details">
 
                     <p class="bio">
-                        I am a Computer Science student at Universitas Indonesia with an interest in technology and software development. I enjoy learning new things, exploring creative ideas, and improving my skills through different projects and experiences.
+                        {{ bio }}
                     </p>
 
 
                     <dl class="meta-list">
 
                         <div class="meta-row">
+
                             <dt>NPM</dt>
-                            <dd>2506623925</dd>
+
+                            <dd>
+                                {{ npm }}
+                            </dd>
+
                         </div>
 
+
                         <div class="meta-row">
+
                             <dt>Program</dt>
-                            <dd>S1 Ilmu Komputer</dd>
+
+                            <dd>
+                                {{ study_program }}
+                            </dd>
+
                         </div>
 
                     </dl>
@@ -99,12 +119,64 @@
                         </a>
 
                         <a
-                            href="wmfatah@gmail.com"
+                            href="mailto:wmfatah@gmail.com"
                             class="social-link">
                             Email
                         </a>
 
                     </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Skills -->
+
+        <section class="skills-section">
+
+            <div class="container">
+
+                <h2>My Skills</h2>
+
+                <div class="skills-grid">
+
+                    <article class="skill-card">
+
+                        <h3>Python</h3>
+
+                        <p>
+                            Basic programming, problem solving,
+                            and application development.
+                        </p>
+
+                    </article>
+
+
+                    <article class="skill-card">
+
+                        <h3>Java</h3>
+
+                        <p>
+                            Object-oriented programming and
+                            simple application development.
+                        </p>
+
+                    </article>
+
+
+                    <article class="skill-card">
+
+                        <h3>HTML &amp; CSS</h3>
+
+                        <p>
+                            Building structured and responsive
+                            web interfaces.
+                        </p>
+
+                    </article>
 
                 </div>
 
@@ -120,7 +192,7 @@
         <div class="container">
 
             <p>
-                &copy; 2026 Muhammad Fatahillah Widodo.
+                &copy; 2026 {{ name }}.
                 Fakultas Ilmu Komputer, Universitas Indonesia.
             </p>
 
