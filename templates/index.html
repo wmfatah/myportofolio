@@ -1,205 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block meta %}
+<title>{{ name }} - Portofolio</title>
+{% endblock meta %}
 
-    <title>{{ name }} - Portofolio</title>
+{% block content %}
+<main>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- About Me -->
+    <section class="hero" id="profile">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
-        rel="stylesheet">
+        <div class="container hero-grid">
 
-    <link rel="stylesheet" href="/static/css/style.css?v=2">
-</head>
+            <div class="hero-identity">
+                <p class="hero-kicker">
+                    Computer Science &middot; Universitas Indonesia
+                </p>
 
-<body>
+                <h1>{{ name }}</h1>
+            </div>
 
-    <header class="site-header">
-        <div class="container">
+            <div class="hero-photo">
+                <div class="photo-block"></div>
 
-            <a href="{% url 'main:show_main' %}" class="brand">
-                {{ name }}
-            </a>
+                <img
+                    class="avatar"
+                    src="/static/img/foto.png"
+                    alt="Photo of {{ name }}">
+            </div>
 
-            <nav>
-                <a href="{% url 'main:show_main' %}">
-                    Profile
-                </a>
+            <div class="hero-details">
 
-                <a href="{% url 'main:show_experience' %}">
-                    Experience
-                </a>
-            </nav>
+                <p class="bio">
+                    {{ bio }}
+                </p>
 
-        </div>
-    </header>
+                <dl class="meta-list">
 
-
-    <main>
-
-        <!-- About Me -->
-
-        <section class="hero" id="profile">
-
-            <div class="container hero-grid">
-
-                <div class="hero-identity">
-
-                    <p class="hero-kicker">
-                        Computer Science &middot; Universitas Indonesia
-                    </p>
-
-                    <h1>{{ name }}</h1>
-
-                </div>
-
-
-                <div class="hero-photo">
-
-                    <div class="photo-block"></div>
-
-                    <img
-                        class="avatar"
-                        src="/static/img/foto.png"
-                        alt="Photo of {{ name }}">
-
-                </div>
-
-
-                <div class="hero-details">
-
-                    <p class="bio">
-                        {{ bio }}
-                    </p>
-
-
-                    <dl class="meta-list">
-
-                        <div class="meta-row">
-
-                            <dt>NPM</dt>
-
-                            <dd>
-                                {{ npm }}
-                            </dd>
-
-                        </div>
-
-
-                        <div class="meta-row">
-
-                            <dt>Program</dt>
-
-                            <dd>
-                                {{ study_program }}
-                            </dd>
-
-                        </div>
-
-                    </dl>
-
-
-                    <div class="social-links">
-
-                        <a
-                            href="https://github.com/wmfatah"
-                            class="social-link">
-                            GitHub
-                        </a>
-
-                        <a
-                            href="https://www.linkedin.com/in/muhammad-fatahillah-widodo-22b8bb380/"
-                            class="social-link">
-                            LinkedIn
-                        </a>
-
-                        <a
-                            href="mailto:wmfatah@gmail.com"
-                            class="social-link">
-                            Email
-                        </a>
-
+                    <div class="meta-row">
+                        <dt>NPM</dt>
+                        <dd>{{ npm }}</dd>
                     </div>
 
-                </div>
+                    <div class="meta-row">
+                        <dt>Program</dt>
+                        <dd>{{ study_program }}</dd>
+                    </div>
 
-            </div>
+                </dl>
 
-        </section>
+                <div class="social-links">
 
+                    <a
+                        href="https://github.com/wmfatah"
+                        class="social-link">
+                        GitHub
+                    </a>
 
-        <!-- Skills -->
+                    <a
+                        href="https://www.linkedin.com/in/muhammad-fatahillah-widodo-22b8bb380/"
+                        class="social-link">
+                        LinkedIn
+                    </a>
 
-        <section class="skills-section">
-
-            <div class="container">
-
-                <h2>My Skills</h2>
-
-                <div class="skills-grid">
-
-                    <article class="skill-card">
-
-                        <h3>Python</h3>
-
-                        <p>
-                            Basic programming, problem solving,
-                            and application development.
-                        </p>
-
-                    </article>
-
-
-                    <article class="skill-card">
-
-                        <h3>Java</h3>
-
-                        <p>
-                            Object-oriented programming and
-                            simple application development.
-                        </p>
-
-                    </article>
-
-
-                    <article class="skill-card">
-
-                        <h3>HTML &amp; CSS</h3>
-
-                        <p>
-                            Building structured and responsive
-                            web interfaces.
-                        </p>
-
-                    </article>
+                    <a
+                        href="mailto:wmfatah@gmail.com"
+                        class="social-link">
+                        Email
+                    </a>
 
                 </div>
 
             </div>
-
-        </section>
-
-    </main>
-
-
-    <footer class="site-footer">
-
-        <div class="container">
-
-            <p>
-                &copy; 2026 {{ name }}.
-                Fakultas Ilmu Komputer, Universitas Indonesia.
-            </p>
 
         </div>
 
-    </footer>
+    </section>
 
-</body>
 
-</html>
+    <!-- Skills -->
+    <section class="skills-section">
+
+        <div class="container">
+
+            <h2>My Skills</h2>
+
+            <div class="skills-grid">
+
+                <article class="skill-card">
+                    <h3>Python</h3>
+
+                    <p>
+                        Basic programming, problem solving,
+                        and application development.
+                    </p>
+                </article>
+
+                <article class="skill-card">
+                    <h3>Java</h3>
+
+                    <p>
+                        Object-oriented programming and
+                        simple application development.
+                    </p>
+                </article>
+
+                <article class="skill-card">
+                    <h3>HTML &amp; CSS</h3>
+
+                    <p>
+                        Building structured and responsive
+                        web interfaces.
+                    </p>
+                </article>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+{% endblock content %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block meta %}
+<title>Tambah Project - {{ name }}</title>
+{% endblock meta %}
+
+{% block content %}
+<main>
+    <section class="form-section">
+        <div class="container">
+
+            <div class="form-card">
+
+                <h1>Tambah Project</h1>
+
+                <p>
+                    Tambahkan project baru ke portofolio.
+                </p>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="form-group">
+
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+
+                            {{ field }}
+
+                            {% if field.errors %}
+                                <div class="form-error">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    {% endfor %}
+
+                    <div class="form-actions">
+
+                        <a href="{% url 'main:show_projects' %}">
+                            Batal
+                        </a>
+
+                        <button type="submit">
+                            Simpan Project
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+    </section>
+</main>
+{% endblock content %}

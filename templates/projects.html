@@ -1,53 +1,52 @@
-    <!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block meta %}
+<title>Projects - {{ name }}</title>
+{% endblock meta %}
 
-    <title>Projects - {{ name }}</title>
+{% block content %}
+<main>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
-        rel="stylesheet">
-
-    <link rel="stylesheet" href="/static/css/style.css?v=2">
-</head>
-
-<body>
-
-    <header class="site-header">
-        <div class="container">
-
-            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
-
-            <nav>
-                <a href="{% url 'main:show_main' %}">Profile</a>
-                <a href="{% url 'main:show_experience' %}">Experience</a>
-                <a href="{% url 'main:show_projects' %}">Projects</a>
-            </nav>
-
-        </div>
-    </header>
-
-
-    <main>
     <section class="experience-section" id="projects">
         <div class="container">
-            <p class="section-kicker">Karya yang pernah saya buat</p>
+
+            <p class="section-kicker">
+                Karya yang pernah saya buat
+            </p>
+
             <h1>Projects</h1>
 
+            <div class="project-header-actions">
+                <a href="{% url 'main:create_project' %}" class="add-project-button">
+                    + Add Project
+                </a>
+            </div>
+
+            <form method="GET" class="project-search">
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Cari project..."
+                    value="{{ title_query }}"
+                >
+                <button type="submit">
+                    Cari
+                </button>
+            </form>
+
             <div class="experience-grid">
+
                 {% for project in project_list %}
+
                     <article class="experience-card">
+
                         <span class="experience-category">
                             {{ project.technology }}
                         </span>
 
-                        <h2>{{ project.title }}</h2>
+                        <h2>
+                            {{ project.title }}
+                        </h2>
 
                         <p class="experience-description">
                             {{ project.description }}
@@ -60,32 +59,33 @@
                                 </a>
                             </p>
                         {% endif %}
+
+                        <div class="project-actions">
+                            <button
+                                type="button"
+                                class="delete-button"
+                                onclick="document.getElementById('delete-modal-{{ project.pk }}').classList.add('show')"
+                            >
+                                Delete
+                            </button>
+                        </div>
+
+                        {% include "components/project_delete_modal.html" %}
+
                     </article>
 
-                    {% empty %}
-                        <p class="empty-state">
-                            Belum ada project yang ditambahkan.
-                        </p>
-                    {% endfor %}
-                </div>
+                {% empty %}
+
+                    <p class="empty-state">
+                        Belum ada project yang ditambahkan.
+                    </p>
+
+                {% endfor %}
+
             </div>
-        </section>
-    </main>
-
-
-    <footer class="site-footer">
-
-        <div class="container">
-
-            <p>
-                &copy; 2026 {{ name }}.
-                Fakultas Ilmu Komputer, Universitas Indonesia.
-            </p>
 
         </div>
+    </section>
 
-    </footer>
-
-</body>
-
-</html>
+</main>
+{% endblock content %}

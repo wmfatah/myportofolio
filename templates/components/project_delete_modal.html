@@ -1,0 +1,29 @@
+<div id="delete-modal-{{ project.pk }}" class="modal">
+    <div class="modal-content">
+        <h2>Hapus Project?</h2>
+
+        <p>
+            Apakah kamu yakin ingin menghapus
+            <strong>{{ project.title }}</strong>?
+        </p>
+
+        <div class="modal-actions">
+            <button
+                type="button"
+                onclick="document.getElementById('delete-modal-{{ project.pk }}').classList.remove('show')"
+            >
+                Batal
+            </button>
+
+            <form
+                method="POST"
+                action="{% url 'main:delete_project' project.pk %}"
+            >
+                {% csrf_token %}
+                <button type="submit" class="delete-confirm">
+                    Hapus
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
