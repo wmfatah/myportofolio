@@ -20,10 +20,23 @@ def show_main(request):
 
 
 def show_experience(request):
+    json_response = get_experiences_json(request)
+
+    experiences = serializers.deserialize(
+        "json",
+        json_response.content.decode("utf-8")
+    )
+
+    experiences = [
+        experience.object
+        for experience in experiences
+    ]
+
     context = {
         "name": "Muhammad Fatahillah Widodo",
-        "experience_list": Experience.objects.all(),
+        "experience_list": experiences,
     }
+
     return render(request, "experience.html", context)
 
 
@@ -123,3 +136,21 @@ def update_experience(request, experience_id):
     }
 
     return render(request, "experience_form.html", context)
+
+def delete_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+
+    if request.method == "POST":
+        experience.delete()
+        messages.success(request, "Experience berhasil dihapus!")
+
+    return redirect("main:show_experience")
+
+def get_experiences_json(request):
+    experiences = Experience.objects.all()
+    experiences_json = serializers.serialize("json", experiences)
+
+    return HttpResponse(
+        experiences_json,
+        content_type="application/json"
+    )

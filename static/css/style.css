@@ -581,3 +581,22 @@ h1,
 .edit-button:hover {
     opacity: 0.8;
 }
+
+.experience-actions form {
+    margin: 0;
+}
+
+.delete-button {
+    display: inline-block;
+    padding: 0.65rem 1rem;
+    background-color: #dc2626;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font: inherit;
+}
+
+.delete-button:hover {
+    opacity: 0.8;
+}

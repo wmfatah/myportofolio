@@ -51,6 +51,16 @@
                             >
                                 Edit
                             </a>
+
+                            <form
+                                method="POST"
+                                action="{% url 'main:delete_experience' experience.id %}"
+                            >
+                                {% csrf_token %}
+                                <button type="submit" class="delete-button">
+                                    Delete
+                                </button>
+                            </form>
                         </div>
 
                     </article>
