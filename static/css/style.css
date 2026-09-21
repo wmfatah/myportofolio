@@ -539,15 +539,17 @@ h1,
     background-color: var(--accent);
 }
 
-/* Add Project Button */
+/* Add Project & Experience Button */
 
-.project-header-actions {
+.project-header-actions,
+.experience-header-actions {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 1rem;
 }
 
-.add-project-button {
+.add-project-button,
+.add-experience-button {
     display: inline-block;
     padding: 0.7rem 1.2rem;
     color: var(--paper);
@@ -558,7 +560,8 @@ h1,
     font-weight: 600;
 }
 
-.add-project-button:hover {
+.add-project-button:hover,
+.add-experience-button:hover {
     background-color: var(--accent);
 }
 
