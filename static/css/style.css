@@ -561,3 +561,23 @@ h1,
 .add-project-button:hover {
     background-color: var(--accent);
 }
+
+.experience-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.edit-button {
+    display: inline-block;
+    padding: 0.65rem 1rem;
+    background-color: #111;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.edit-button:hover {
+    opacity: 0.8;
+}

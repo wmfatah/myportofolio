@@ -44,6 +44,15 @@
                             </p>
                         {% endif %}
 
+                        <div class="experience-actions">
+                            <a
+                                href="{% url 'main:update_experience' experience.id %}"
+                                class="edit-button"
+                            >
+                                Edit
+                            </a>
+                        </div>
+
                     </article>
 
                 {% empty %}

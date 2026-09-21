@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block meta %}
+<title>{{ page_title }} - {{ name }}</title>
+{% endblock meta %}
+
+{% block content %}
+<main>
+    <section class="form-section">
+        <div class="container">
+
+            <div class="form-card">
+                <h1>{{ page_title }}</h1>
+
+                <p>
+                    Isi informasi experience di bawah ini.
+                </p>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+
+                            {{ field }}
+
+                            {% if field.errors %}
+                                <div class="form-error">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <div class="form-actions">
+                        <a href="{% url 'main:show_experience' %}">
+                            Batal
+                        </a>
+
+                        <button type="submit">
+                            Simpan Experience
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </section>
+</main>
+{% endblock content %}
