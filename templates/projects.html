@@ -16,11 +16,16 @@
 
             <h1>Projects</h1>
 
-            <div class="project-header-actions">
-                <a href="{% url 'main:create_project' %}" class="add-project-button">
-                    + Add Project
-                </a>
-            </div>
+            {% if user.is_superuser %}
+                <div class="project-header-actions">
+                    <a
+                        href="{% url 'main:create_project' %}"
+                        class="add-project-button"
+                    >
+                        + Add Project
+                    </a>
+                </div>
+            {% endif %}
 
             <form method="GET" class="project-search">
                 <input
@@ -60,17 +65,31 @@
                             </p>
                         {% endif %}
 
-                        <div class="project-actions">
-                            <button
-                                type="button"
-                                class="delete-button"
-                                onclick="document.getElementById('delete-modal-{{ project.pk }}').classList.add('show')"
-                            >
-                                Delete
-                            </button>
-                        </div>
+                        {% if project.project_url %}
+                            <p class="experience-status">
+                                <a href="{{ project.project_url }}">
+                                    Lihat Project
+                                </a>
+                            </p>
+                        {% endif %}
 
-                        {% include "components/project_delete_modal.html" %}
+                        {% include "components/project_star.html" with project=project %}
+
+                        {% if user.is_superuser %}
+                            <div class="project-actions">
+
+                                <button
+                                    type="button"
+                                    class="delete-button"
+                                    onclick="document.getElementById('delete-modal-{{ project.pk }}').classList.add('show')"
+                                >
+                                    Delete
+                                </button>
+
+                            </div>
+
+                            {% include "components/project_delete_modal.html" %}
+                        {% endif %}
 
                     </article>
 
