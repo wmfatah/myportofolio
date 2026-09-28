@@ -16,14 +16,16 @@
 
             <h1>Experience</h1>
 
-            <div class="experience-header-actions">
-                <a
-                    href="{% url 'main:create_experience' %}"
-                    class="add-experience-button"
-                >
-                    + Add Experience
-                </a>
-            </div>
+            {% if user.is_superuser %}
+                <div class="experience-header-actions">
+                    <a
+                        href="{% url 'main:create_experience' %}"
+                        class="add-experience-button"
+                    >
+                        + Add Experience
+                    </a>
+                </div>
+            {% endif %}
 
             <div class="experience-grid">
 
@@ -53,30 +55,34 @@
                             </p>
                         {% endif %}
 
-                        <div class="experience-actions">
+                        {% if user.is_superuser or is_editor %}
+                            <div class="experience-actions">
 
-                            <a
-                                href="{% url 'main:update_experience' experience.id %}"
-                                class="edit-button"
-                            >
-                                Edit
-                            </a>
-
-                            <form
-                                method="POST"
-                                action="{% url 'main:delete_experience' experience.id %}"
-                            >
-                                {% csrf_token %}
-
-                                <button
-                                    type="submit"
-                                    class="delete-button"
+                                <a
+                                    href="{% url 'main:update_experience' experience.id %}"
+                                    class="edit-button"
                                 >
-                                    Delete
-                                </button>
-                            </form>
+                                    Edit
+                                </a>
 
-                        </div>
+                                {% if user.is_superuser %}
+                                    <form
+                                        method="POST"
+                                        action="{% url 'main:delete_experience' experience.id %}"
+                                    >
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="delete-button"
+                                        >
+                                            Delete
+                                        </button>
+                                    </form>
+                                {% endif %}
+
+                            </div>
+                        {% endif %}
 
                     </article>
 

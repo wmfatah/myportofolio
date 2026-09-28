@@ -34,6 +34,7 @@
                     placeholder="Cari project..."
                     value="{{ title_query }}"
                 >
+
                 <button type="submit">
                     Cari
                 </button>
@@ -65,29 +66,32 @@
                             </p>
                         {% endif %}
 
-                        {% if project.project_url %}
-                            <p class="experience-status">
-                                <a href="{{ project.project_url }}">
-                                    Lihat Project
-                                </a>
-                            </p>
-                        {% endif %}
-
                         {% include "components/project_star.html" with project=project %}
 
-                        {% if user.is_superuser %}
+                        {% if user.is_superuser or is_editor %}
                             <div class="project-actions">
 
-                                <button
-                                    type="button"
-                                    class="delete-button"
-                                    onclick="document.getElementById('delete-modal-{{ project.pk }}').classList.add('show')"
+                                <a
+                                    href="{% url 'main:update_project' project.id %}"
+                                    class="edit-button"
                                 >
-                                    Delete
-                                </button>
+                                    Edit
+                                </a>
+
+                                {% if user.is_superuser %}
+                                    <button
+                                        type="button"
+                                        class="delete-button"
+                                        onclick="document.getElementById('delete-modal-{{ project.pk }}').classList.add('show')"
+                                    >
+                                        Delete
+                                    </button>
+                                {% endif %}
 
                             </div>
+                        {% endif %}
 
+                        {% if user.is_superuser %}
                             {% include "components/project_delete_modal.html" %}
                         {% endif %}
 

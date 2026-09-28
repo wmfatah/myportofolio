@@ -13,6 +13,13 @@ from main.forms import ExperienceForm, ProjectForm
 from main.models import Experience, Project
 
 
+def is_editor(user):
+    return (
+        user.is_authenticated
+        and user.groups.filter(name="Editor").exists()
+    )
+
+
 def show_main(request):
     last_login = request.COOKIES.get(
         "last_login",
@@ -34,21 +41,12 @@ def show_main(request):
 
 
 def show_experience(request):
-    json_response = get_experiences_json(request)
-
-    experiences = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8")
-    )
-
-    experiences = [
-        experience.object
-        for experience in experiences
-    ]
+    experiences = Experience.objects.all()
 
     context = {
         "name": "Muhammad Fatahillah Widodo",
         "experience_list": experiences,
+        "is_editor": is_editor(request.user),
     }
 
     return render(request, "experience.html", context)
@@ -68,6 +66,7 @@ def show_projects(request):
         "name": "Muhammad Fatahillah Widodo",
         "project_list": projects,
         "title_query": title_query,
+        "is_editor": is_editor(request.user),
     }
 
     return render(request, "projects.html", context)
@@ -93,30 +92,44 @@ def create_project(request):
     context = {
         "name": "Muhammad Fatahillah Widodo",
         "form": form,
+        "page_title": "Tambah Project",
     }
 
     return render(request, "projects_form.html", context)
 
 
-def get_projects_json(request):
-    title_query = request.GET.get("title", "").strip()
+@login_required(login_url="/login/")
+def update_project(request, project_id):
+    if not request.user.is_superuser and not is_editor(request.user):
+        raise PermissionDenied
 
-    projects = Project.objects.all()
+    project = get_object_or_404(
+        Project,
+        pk=project_id
+    )
 
-    if title_query:
-        projects = projects.filter(
-            title__icontains=title_query
+    form = ProjectForm(
+        request.POST or None,
+        instance=project
+    )
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+
+        messages.success(
+            request,
+            "Project berhasil diperbarui!"
         )
 
-    projects_json = serializers.serialize(
-        "json",
-        projects
-    )
+        return redirect("main:show_projects")
 
-    return HttpResponse(
-        projects_json,
-        content_type="application/json"
-    )
+    context = {
+        "name": "Muhammad Fatahillah Widodo",
+        "form": form,
+        "page_title": "Edit Project",
+    }
+
+    return render(request, "projects_form.html", context)
 
 
 @login_required(login_url="/login/")
@@ -140,7 +153,38 @@ def delete_project(request, project_id):
     return redirect("main:show_projects")
 
 
+def get_projects_json(request):
+    title_query = request.GET.get("title", "").strip()
+
+    projects = Project.objects.all()
+
+    if title_query:
+        projects = projects.filter(
+            title__icontains=title_query
+        )
+
+    projects_json = serializers.serialize(
+    "json",
+    projects,
+    fields=[
+        "title",
+        "description",
+        "technology",
+        "project_url",
+    ]
+)
+
+    return HttpResponse(
+        projects_json,
+        content_type="application/json"
+    )
+
+
+@login_required(login_url="/login/")
 def create_experience(request):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     form = ExperienceForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -166,7 +210,11 @@ def create_experience(request):
     )
 
 
+@login_required(login_url="/login/")
 def update_experience(request, experience_id):
+    if not request.user.is_superuser and not is_editor(request.user):
+        raise PermissionDenied
+
     experience = get_object_or_404(
         Experience,
         pk=experience_id
@@ -200,7 +248,11 @@ def update_experience(request, experience_id):
     )
 
 
+@login_required(login_url="/login/")
 def delete_experience(request, experience_id):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     experience = get_object_or_404(
         Experience,
         pk=experience_id
