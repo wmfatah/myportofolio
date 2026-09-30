@@ -287,7 +287,6 @@ h1,
 /* Responsive */
 
 @media (max-width: 600px) {
-
     .hero {
         padding: 3rem 0;
     }
@@ -421,6 +420,7 @@ h1,
 }
 
 /* Project Actions */
+
 .project-actions {
     margin-top: 1.25rem;
 }
@@ -442,6 +442,7 @@ h1,
 }
 
 /* Delete Modal */
+
 .modal {
     display: none;
     position: fixed;
@@ -626,4 +627,30 @@ h1,
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.25);
     font-size: 0.8rem;
+}
+
+/* Toast */
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.toast {
+    min-width: 250px;
+    margin-bottom: 10px;
+    padding: 12px 18px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toast-success {
+    border-left: 4px solid green;
+}
+
+.toast-error {
+    border-left: 4px solid red;
 }

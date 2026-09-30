@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core import serializers
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from main.forms import ExperienceForm, ProjectForm
@@ -97,6 +97,49 @@ def create_project(request):
 
     return render(request, "projects_form.html", context)
 
+@login_required(login_url="/login/")
+def create_project_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": "Anda tidak memiliki izin."
+            },
+            status=403
+        )
+
+    if request.method == "POST":
+        form = ProjectForm(request.POST)
+
+        if form.is_valid():
+            project = form.save()
+
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "message": "Project berhasil ditambahkan!",
+                    "project_id": project.pk,
+                },
+                status=201
+            )
+
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": "Data project tidak valid.",
+                "errors": form.errors,
+            },
+            status=400
+        )
+
+    return JsonResponse(
+        {
+            "status": "error",
+            "message": "Method tidak diizinkan."
+        },
+        status=405
+    )
+
 
 @login_required(login_url="/login/")
 def update_project(request, project_id):
@@ -163,16 +206,34 @@ def get_projects_json(request):
             title__icontains=title_query
         )
 
-    projects_json = serializers.serialize(
-    "json",
-    projects,
-    fields=[
-        "title",
-        "description",
-        "technology",
-        "project_url",
-    ]
-)
+    data = []
+
+    for project in projects:
+        is_starred = False
+
+        if request.user.is_authenticated:
+            is_starred = project.starred_by.filter(
+                pk=request.user.pk
+            ).exists()
+
+        data.append({
+            "id": project.pk,
+            "title": project.title,
+            "description": project.description,
+            "technology": project.technology,
+            "project_url": project.project_url,
+            "star_count": project.starred_by.count(),
+            "is_starred": is_starred,
+        })
+
+    return JsonResponse(
+        {
+            "projects": data,
+            "is_authenticated": request.user.is_authenticated,
+            "is_superuser": request.user.is_superuser,
+            "is_editor": is_editor(request.user),
+        }
+    )
 
     return HttpResponse(
         projects_json,
@@ -361,7 +422,26 @@ def toggle_star(request, project_id):
     if request.method == "POST":
         if request.user in project.starred_by.all():
             project.starred_by.remove(request.user)
+            is_starred = False
+            message = "Star berhasil dibatalkan."
         else:
             project.starred_by.add(request.user)
+            is_starred = True
+            message = "Project berhasil diberi Star."
 
-    return redirect("main:show_projects")
+        return JsonResponse(
+            {
+                "status": "success",
+                "message": message,
+                "is_starred": is_starred,
+                "star_count": project.starred_by.count(),
+            }
+        )
+
+    return JsonResponse(
+        {
+            "status": "error",
+            "message": "Method tidak diizinkan."
+        },
+        status=405
+    )

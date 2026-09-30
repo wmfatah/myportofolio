@@ -18,18 +18,23 @@
 
             {% if user.is_superuser %}
                 <div class="project-header-actions">
-                    <a
-                        href="{% url 'main:create_project' %}"
+                    <button
+                        type="button"
                         class="add-project-button"
+                        onclick="openAddProjectModal()"
                     >
                         + Add Project
-                    </a>
+                    </button>
                 </div>
             {% endif %}
 
-            <form method="GET" class="project-search">
+            <form
+                class="project-search"
+                id="project-search-form"
+            >
                 <input
                     type="text"
+                    id="project-search-input"
                     name="title"
                     placeholder="Cari project..."
                     value="{{ title_query }}"
@@ -40,75 +45,411 @@
                 </button>
             </form>
 
-            <div class="experience-grid">
-
-                {% for project in project_list %}
-
-                    <article class="experience-card">
-
-                        <span class="experience-category">
-                            {{ project.technology }}
-                        </span>
-
-                        <h2>
-                            {{ project.title }}
-                        </h2>
-
-                        <p class="experience-description">
-                            {{ project.description }}
-                        </p>
-
-                        {% if project.project_url %}
-                            <p class="experience-status">
-                                <a href="{{ project.project_url }}">
-                                    Lihat Project
-                                </a>
-                            </p>
-                        {% endif %}
-
-                        {% include "components/project_star.html" with project=project %}
-
-                        {% if user.is_superuser or is_editor %}
-                            <div class="project-actions">
-
-                                <a
-                                    href="{% url 'main:update_project' project.id %}"
-                                    class="edit-button"
-                                >
-                                    Edit
-                                </a>
-
-                                {% if user.is_superuser %}
-                                    <button
-                                        type="button"
-                                        class="delete-button"
-                                        onclick="document.getElementById('delete-modal-{{ project.pk }}').classList.add('show')"
-                                    >
-                                        Delete
-                                    </button>
-                                {% endif %}
-
-                            </div>
-                        {% endif %}
-
-                        {% if user.is_superuser %}
-                            {% include "components/project_delete_modal.html" %}
-                        {% endif %}
-
-                    </article>
-
-                {% empty %}
-
-                    <p class="empty-state">
-                        Belum ada project yang ditambahkan.
-                    </p>
-
-                {% endfor %}
-
+            <div
+                class="experience-grid"
+                id="project-list"
+            >
             </div>
 
         </div>
     </section>
 
+    {% if user.is_superuser %}
+        {% include "components/project_add_modal.html" %}
+    {% endif %}
+
 </main>
 {% endblock content %}
+
+
+{% block script %}
+<script>
+
+    function openAddProjectModal() {
+        const modal = document.getElementById(
+            "add-project-modal"
+        );
+
+        if (modal) {
+            modal.classList.add("show");
+        }
+    }
+
+
+    function closeAddProjectModal() {
+        const modal = document.getElementById(
+            "add-project-modal"
+        );
+
+        if (modal) {
+            modal.classList.remove("show");
+        }
+    }
+
+
+    async function addProject() {
+        const form = document.getElementById(
+            "add-project-form"
+        );
+
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(
+                "{% url 'main:create_project_ajax' %}",
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+                form.reset();
+
+                closeAddProjectModal();
+
+                await refreshProjects();
+
+                showToast(
+                    data.message ||
+                    "Project berhasil ditambahkan!",
+                    "success"
+                );
+
+                return;
+            }
+
+            showToast(
+                data.message ||
+                "Gagal menambahkan project.",
+                "error"
+            );
+
+        } catch (error) {
+            showToast(
+                "Terjadi kesalahan saat menambahkan project.",
+                "error"
+            );
+        }
+    }
+
+
+    async function toggleStar(projectId) {
+        const csrfToken = document.querySelector(
+            "[name=csrfmiddlewaretoken]"
+        ).value;
+
+        try {
+            const response = await fetch(
+                `/projects/${projectId}/star/`,
+                {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                    },
+                }
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+                const searchValue = document
+                    .getElementById("project-search-input")
+                    .value
+                    .trim();
+
+                await refreshProjects(searchValue);
+
+                showToast(
+                    data.message,
+                    "success"
+                );
+
+                return;
+            }
+
+            showToast(
+                data.message ||
+                "Gagal mengubah Star.",
+                "error"
+            );
+
+        } catch (error) {
+            showToast(
+                "Terjadi kesalahan saat mengubah Star.",
+                "error"
+            );
+        }
+    }
+
+
+    async function getProjects(title = "") {
+        let url = "{% url 'main:get_projects_json' %}";
+
+        if (title !== "") {
+            url += "?title=" + encodeURIComponent(title);
+        }
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(
+                "Gagal mengambil project."
+            );
+        }
+
+        const data = await response.json();
+
+        return data;
+    }
+
+
+    function createProjectCard(project, data) {
+        const article = document.createElement(
+            "article"
+        );
+
+        article.classList.add(
+            "experience-card"
+        );
+
+
+        let projectLink = "";
+
+        if (project.project_url) {
+            projectLink = `
+                <p class="experience-status">
+                    <a
+                        href="${project.project_url}"
+                        target="_blank"
+                    >
+                        Lihat Project
+                    </a>
+                </p>
+            `;
+        }
+
+
+        let starButton = "";
+
+        if (data.is_authenticated) {
+            starButton = `
+                <form
+                    class="star-form"
+                    onsubmit="
+                        event.preventDefault();
+                        toggleStar(${project.id});
+                    "
+                >
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="button-star ${
+                            project.is_starred
+                            ? "is-starred"
+                            : ""
+                        }"
+                    >
+                        ${
+                            project.is_starred
+                            ? "Unstar"
+                            : "Star"
+                        }
+
+                        <span class="star-count">
+                            ${project.star_count}
+                        </span>
+                    </button>
+                </form>
+            `;
+        } else {
+            starButton = `
+                <p class="experience-status">
+
+                    <a href="{% url 'main:login' %}">
+                        Login untuk memberikan Star
+                    </a>
+
+                    <span class="star-count">
+                        ${project.star_count}
+                    </span>
+
+                </p>
+            `;
+        }
+
+
+        let projectActions = "";
+
+        if (
+            data.is_superuser ||
+            data.is_editor
+        ) {
+            projectActions = `
+                <div class="project-actions">
+
+                    <a
+                        href="/projects/${project.id}/edit/"
+                        class="edit-button"
+                    >
+                        Edit
+                    </a>
+
+                    ${
+                        data.is_superuser
+                        ? `
+                            <form
+                                method="POST"
+                                action="/projects/${project.id}/delete/"
+                                style="display: inline;"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="delete-button"
+                                >
+                                    Delete
+                                </button>
+                            </form>
+                        `
+                        : ""
+                    }
+
+                </div>
+            `;
+        }
+
+
+        article.innerHTML = `
+            <span class="experience-category">
+                ${project.technology}
+            </span>
+
+            <h2>
+                ${project.title}
+            </h2>
+
+            <p class="experience-description">
+                ${project.description}
+            </p>
+
+            ${projectLink}
+
+            ${starButton}
+
+            ${projectActions}
+        `;
+
+        return article;
+    }
+
+
+    async function refreshProjects(title = "") {
+        const projectList =
+            document.getElementById(
+                "project-list"
+            );
+
+        projectList.innerHTML = `
+            <p class="empty-state">
+                Loading...
+            </p>
+        `;
+
+        try {
+            const data =
+                await getProjects(title);
+
+            projectList.innerHTML = "";
+
+            if (data.projects.length === 0) {
+                projectList.innerHTML = `
+                    <p class="empty-state">
+                        Belum ada project yang ditemukan.
+                    </p>
+                `;
+
+                return;
+            }
+
+            data.projects.forEach(
+                function (project) {
+                    const card =
+                        createProjectCard(
+                            project,
+                            data
+                        );
+
+                    projectList.appendChild(
+                        card
+                    );
+                }
+            );
+
+        } catch (error) {
+            projectList.innerHTML = `
+                <p class="empty-state">
+                    Gagal mengambil data project.
+                </p>
+            `;
+
+            showToast(
+                "Gagal mengambil data project.",
+                "error"
+            );
+        }
+    }
+
+
+    document
+        .getElementById(
+            "project-search-form"
+        )
+        .addEventListener(
+            "submit",
+            function (event) {
+                event.preventDefault();
+
+                const title =
+                    document
+                        .getElementById(
+                            "project-search-input"
+                        )
+                        .value
+                        .trim();
+
+                refreshProjects(title);
+            }
+        );
+
+
+    const addProjectForm =
+        document.getElementById(
+            "add-project-form"
+        );
+
+    if (addProjectForm) {
+        addProjectForm.addEventListener(
+            "submit",
+            function (event) {
+                event.preventDefault();
+
+                addProject();
+            }
+        );
+    }
+
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+            refreshProjects();
+        }
+    );
+
+</script>
+{% endblock script %}
