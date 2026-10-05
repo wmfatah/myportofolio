@@ -1,0 +1,132 @@
+<div
+    id="add-experience-modal"
+    class="modal"
+>
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Tambah Experience</h2>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeAddExperienceModal()"
+            >
+                &times;
+            </button>
+        </div>
+
+        <form id="add-experience-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="experience-title">
+                    Judul Experience
+                </label>
+
+                <input
+                    type="text"
+                    id="experience-title"
+                    name="title"
+                    maxlength="255"
+                    placeholder="Judul experience"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="experience-description">
+                    Deskripsi
+                </label>
+
+                <textarea
+                    id="experience-description"
+                    name="description"
+                    rows="3"
+                    placeholder="Ceritakan pengalamanmu"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="experience-category">
+                    Kategori
+                </label>
+
+                <select
+                    id="experience-category"
+                    name="category"
+                    required
+                >
+                    <option value="internship">
+                        Internship
+                    </option>
+
+                    <option value="research">
+                        Research
+                    </option>
+
+                    <option value="volunteer">
+                        Volunteer
+                    </option>
+
+                    <option value="part-time">
+                        Part-Time
+                    </option>
+
+                    <option value="full-time">
+                        Full-Time
+                    </option>
+
+                    <option value="freelance">
+                        Freelance
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="experience-thumbnail">
+                    URL Thumbnail
+                </label>
+
+                <input
+                    type="url"
+                    id="experience-thumbnail"
+                    name="thumbnail"
+                    placeholder="https://example.com/image.jpg"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="experience-ended-at">
+                    Tanggal Selesai
+                </label>
+
+                <input
+                    type="datetime-local"
+                    id="experience-ended-at"
+                    name="ended_at"
+                >
+            </div>
+
+            <div class="modal-actions">
+                <button
+                    type="button"
+                    class="delete-button"
+                    onclick="closeAddExperienceModal()"
+                >
+                    Batal
+                </button>
+
+                <button
+                    type="submit"
+                    class="add-project-button"
+                >
+                    Simpan Experience
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>

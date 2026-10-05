@@ -9,6 +9,7 @@ from main.views import (
     get_projects_json,
     delete_project,
     create_experience,
+    create_experience_ajax,
     update_experience,
     delete_experience,
     get_experiences_json,
@@ -17,17 +18,34 @@ from main.views import (
     logout_user,
     toggle_star,
     update_project,
+    toggle_experience_star,
 )
 
 app_name = "main"
 
 urlpatterns = [
-    path("", show_main, name="show_main"),
+    path(
+        "",
+        show_main,
+        name="show_main"
+    ),
 
     # Authentication
-    path("register/", register, name="register"),
-    path("login/", login_user, name="login"),
-    path("logout/", logout_user, name="logout"),
+    path(
+        "register/",
+        register,
+        name="register"
+    ),
+    path(
+        "login/",
+        login_user,
+        name="login"
+    ),
+    path(
+        "logout/",
+        logout_user,
+        name="logout"
+    ),
 
     # Experience
     path(
@@ -41,6 +59,11 @@ urlpatterns = [
         name="create_experience"
     ),
     path(
+        "experience/add/ajax/",
+        create_experience_ajax,
+        name="create_experience_ajax"
+    ),
+    path(
         "experience/<uuid:experience_id>/edit/",
         update_experience,
         name="update_experience"
@@ -49,6 +72,11 @@ urlpatterns = [
         "experience/<uuid:experience_id>/delete/",
         delete_experience,
         name="delete_experience"
+    ),
+    path(
+        "experience/<uuid:experience_id>/star/",
+        toggle_experience_star,
+        name="toggle_experience_star"
     ),
     path(
         "api/experiences/",

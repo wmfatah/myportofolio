@@ -1,10 +1,13 @@
 from django.forms import ModelForm, TextInput, Textarea, URLInput
+from django.utils.html import strip_tags
+
 from main.models import Experience, Project
 
 
 class ProjectForm(ModelForm):
     class Meta:
         model = Project
+
         fields = [
             "title",
             "description",
@@ -39,9 +42,23 @@ class ProjectForm(ModelForm):
             }),
         }
 
+    def clean_title(self):
+        title = self.cleaned_data["title"]
+        return strip_tags(title)
+
+    def clean_description(self):
+        description = self.cleaned_data["description"]
+        return strip_tags(description)
+
+    def clean_technology(self):
+        technology = self.cleaned_data["technology"]
+        return strip_tags(technology)
+
+
 class ExperienceForm(ModelForm):
     class Meta:
         model = Experience
+
         fields = [
             "title",
             "description",
@@ -49,6 +66,7 @@ class ExperienceForm(ModelForm):
             "thumbnail",
             "ended_at",
         ]
+
         labels = {
             "title": "Judul Experience",
             "description": "Deskripsi",
@@ -56,16 +74,27 @@ class ExperienceForm(ModelForm):
             "thumbnail": "URL Thumbnail",
             "ended_at": "Tanggal Selesai",
         }
+
         widgets = {
             "title": TextInput(attrs={
                 "placeholder": "Judul experience",
                 "maxlength": 255,
             }),
+
             "description": Textarea(attrs={
                 "placeholder": "Ceritakan pengalamanmu",
                 "rows": 3,
             }),
+
             "thumbnail": URLInput(attrs={
                 "placeholder": "https://example.com/image.jpg",
             }),
         }
+
+    def clean_title(self):
+        title = self.cleaned_data["title"]
+        return strip_tags(title)
+
+    def clean_description(self):
+        description = self.cleaned_data["description"]
+        return strip_tags(description)

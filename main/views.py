@@ -10,7 +10,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from main.forms import ExperienceForm, ProjectForm
-from main.models import Experience, Project
+from main.models import Experience, Project 
 
 
 def is_editor(user):
@@ -270,6 +270,49 @@ def create_experience(request):
         context
     )
 
+@login_required(login_url="/login/")
+def create_experience_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": "Anda tidak memiliki izin."
+            },
+            status=403
+        )
+
+    if request.method == "POST":
+        form = ExperienceForm(request.POST)
+
+        if form.is_valid():
+            experience = form.save()
+
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "message": "Experience berhasil ditambahkan!",
+                    "experience_id": str(experience.id),
+                },
+                status=201
+            )
+
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": "Data Experience tidak valid.",
+                "errors": form.errors.get_json_data(),
+            },
+            status=400
+        )
+
+    return JsonResponse(
+        {
+            "status": "error",
+            "message": "Method tidak diizinkan."
+        },
+        status=405
+    )
+
 
 @login_required(login_url="/login/")
 def update_experience(request, experience_id):
@@ -331,16 +374,55 @@ def delete_experience(request, experience_id):
 
 
 def get_experiences_json(request):
+    title_query = request.GET.get(
+        "title",
+        ""
+    ).strip()
+
     experiences = Experience.objects.all()
 
-    experiences_json = serializers.serialize(
-        "json",
-        experiences
-    )
+    if title_query:
+        experiences = experiences.filter(
+            title__icontains=title_query
+        )
 
-    return HttpResponse(
-        experiences_json,
-        content_type="application/json"
+    experience_data = []
+
+    for experience in experiences:
+        is_starred = False
+
+        if request.user.is_authenticated:
+            is_starred = experience.starred_by.filter(
+                pk=request.user.pk
+            ).exists()
+
+        experience_data.append(
+            {
+                "id": str(experience.id),
+                "title": experience.title,
+                "description": experience.description,
+                "category": experience.category,
+                "category_display": experience.get_category_display(),
+                "thumbnail": experience.thumbnail or "",
+                "started_at": experience.started_at.isoformat(),
+                "ended_at": (
+                    experience.ended_at.isoformat()
+                    if experience.ended_at
+                    else None
+                ),
+                "is_ongoing": experience.is_ongoing,
+                "star_count": experience.starred_by.count(),
+                "is_starred": is_starred,
+            }
+        )
+
+    return JsonResponse(
+        {
+            "experiences": experience_data,
+            "is_authenticated": request.user.is_authenticated,
+            "is_superuser": request.user.is_superuser,
+            "is_editor": is_editor(request.user),
+        }
     )
 
 
@@ -435,6 +517,43 @@ def toggle_star(request, project_id):
                 "message": message,
                 "is_starred": is_starred,
                 "star_count": project.starred_by.count(),
+            }
+        )
+
+    return JsonResponse(
+        {
+            "status": "error",
+            "message": "Method tidak diizinkan."
+        },
+        status=405
+    )
+
+@login_required(login_url="/login/")
+def toggle_experience_star(request, experience_id):
+    experience = get_object_or_404(
+        Experience,
+        pk=experience_id
+    )
+
+    if request.method == "POST":
+        if request.user in experience.starred_by.all():
+            experience.starred_by.remove(request.user)
+
+            is_starred = False
+            message = "Star Experience berhasil dibatalkan."
+
+        else:
+            experience.starred_by.add(request.user)
+
+            is_starred = True
+            message = "Experience berhasil diberi Star."
+
+        return JsonResponse(
+            {
+                "status": "success",
+                "message": message,
+                "is_starred": is_starred,
+                "star_count": experience.starred_by.count(),
             }
         )
 
