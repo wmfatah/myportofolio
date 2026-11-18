@@ -1,4 +1,4 @@
-# myportofolio
+ÿş# myportofolio
 
 Ini adalah latihan branch Git.
 
@@ -30,7 +30,7 @@ Pada tugas ini, saya menggunakan `ExperienceForm` yang terhubung dengan model `E
 
 #### 2. Apa perbedaan antara JSON dan XML dalam konteks pengiriman data?
 
-JSON (JavaScript Object Notation) menyimpan data dengan struktur key-value dan array. Format JSON relatif ringkas dan mudah digunakan, terutama pada aplikasi web.
+JSON (JavaScript Object Notationmenyimpan data dengan struktur key-value dan array. Format JSON relatif ringkas dan mudah digunakan, terutama pada aplikasi web.
 
 XML (Extensible Markup Language) menggunakan tag pembuka dan penutup untuk menyusun data. Karena menggunakan banyak tag, XML biasanya lebih panjang dibandingkan JSON.
 
@@ -114,4 +114,4 @@ Saya memberikan konteks berupa kode `models.py`, `views.py`, `urls.py`, template
 
 Strategi prompting yang saya gunakan adalah memberikan kode terbaru setelah setiap perubahan dan meminta bantuan untuk memperbaiki atau melanjutkan bagian berikutnya. Saya kemudian menerapkan saran tersebut secara manual dan menguji setiap role melalui development server.
 
-Dalam prosesnya, hasil dari AI tidak langsung digunakan tanpa pengecekan. Beberapa implementasi perlu disesuaikan kembali dengan struktur project, requirement tugas, dan hasil pengujian. Saya melakukan pengujian manual terhadap akses guest, pengguna biasa, Editor, dan superuser, termasuk pengujian `403 Forbidden`, Star/Unstar, serta endpoint JSON.
+Dalam prosesnya, hasil dari AI tidak langsung digunakan tanpa pengecekan. Beberapa implementasi perlu disesuaikan kembali dengan struktur project, requirement tugas, dan hasil pengujian. Saya melakukan pengujian manual terhadap akses guest, pengguna biasa, Editor, dan superuser, termasuk pengujian `403 Forbidden`, Star/Unstar, serta endpoint JSON
